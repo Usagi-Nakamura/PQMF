@@ -1,4 +1,5 @@
 ﻿open System
+open System.IO
 open FSharp.Text.Lexing
 open Lexer
 open Parser
@@ -8,18 +9,35 @@ let evaluate (input:string) =
   let output = Parser.parse Lexer.tokenize lexbuf
   string output
 
+let tokenList (input : string) =
+  let lexbuf = LexBuffer<char>.FromString input
+  seq {
+    while not lexbuf.IsPastEndOfStream do
+      match tokenize lexbuf with
+      | EOF -> yield! []
+      | _ -> yield ((lexeme lexbuf), lexbuf.EndPos.Line, lexbuf.EndPos.Column, lexbuf.EndPos.AbsoluteOffset)
+  }
+
 [<EntryPoint>]
 let main argv =
 
-    printfn "Press Ctrl+c to Exit"
+    let reader = 
+      let source_path = __SOURCE_DIRECTORY__ + "\\test.pqmf"  
+      new StreamReader(source_path)
 
-    while true do
-        printf "Evaluate > "
-        let input = Console.ReadLine()
-        try
-            let result = evaluate input
-            printfn "%s" result
-        with ex -> printfn "%s" (ex.ToString())
+    let input = reader.ReadToEnd()
+    reader.Close()
 
+//    printfn "%A" ((tokenList input) |> List.ofSeq)
 
+//(*
+    let result = evaluate input
+
+    let writer = 
+      let distination_path = __SOURCE_DIRECTORY__ + "\\test.pq"
+      new StreamWriter(distination_path, false, Text.UTF8Encoding())
+
+    writer.Write(result)
+    writer.Close()
+//*)
     0 // return an integer exit code

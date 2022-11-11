@@ -5,56 +5,156 @@ open FSharp.Text.Lexing
 open FSharp.Text.Parsing.ParseHelpers
 # 1 "Parser.fsy"
 
-let getOp op = 
-    match op with 
-    | "+" -> ( + )
-    | "-" -> ( - )
-    | "/" -> ( / )
-    | "*" -> ( * )
-    | _ -> failwith "unknown operator"
 
-# 16 "Parser.fs"
+let (++) (str1: string) (str2: string) = str1 + "\n" + str2
+
+let boilerplate = 
+    "///////////////////////////////////////////////////////////////////////////////////" ++
+    "// Start of Boilerplate" ++
+    "///////////////////////////////////////////////////////////////////////////////////" ++
+    "let" ++
+    "    Usagi_Nakamura.Curry = (f as function) =>" ++
+    "        let" ++
+    "            arity = Record.FieldCount(Type.FunctionParameters(Value.Type(f)))," ++
+    "            ApplyTo =" ++
+    "                (args as list) =>" ++
+    "                    if List.Count(args) >= arity then" ++
+    "                        Function.Invoke(f, args)" ++
+    "                    else" ++
+    "                        (x as any) =>" ++
+    "                        if List.Count(args) = arity - 1" ++
+    "                        then @ApplyTo({x} & args)" ++
+    "                        else @ApplyTo(args & {x})" ++
+    "    in" ++
+    "        ApplyTo({})" ++
+    "in" ++
+    "///////////////////////////////////////////////////////////////////////////////////" ++
+    "// End of Boilerplate" ++
+    "///////////////////////////////////////////////////////////////////////////////////" +
+    "\n\n"
+
+
+
+# 38 "Parser.fs"
 // This type is the type of tokens accepted by the parser
 type token = 
+  | CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR of (string)
+  | FUNCTION_OPERATOR of (string)
+  | DOTDOT of (string)
+  | CLOSING_BRACE of (string)
+  | OPENING_BRACE of (string)
+  | COMMA of (string)
+  | CLOSING_PARENTHESIS of (string)
+  | OPENING_PARENTHESIS of (string)
+  | FORWARD_PIPELINE_OPERATOR of (string)
+  | MULTIPLICATIVE_OPERATOR of (string)
+  | ADDITIVE_OPERATOR of (string)
   | EOF
   | LPAREN
   | RPAREN
+  | IDENTIFIER_WITH_PRIME of (string)
+  | IDENTIFIER of (string)
+  | APPLICATION of (string)
+  | WHITESPACE of (string)
   | OP of (string)
-  | Number of (int)
+  | LITERAL of (string)
 // This type is used to give symbolic names to token indexes, useful for error messages
 type tokenId = 
+    | TOKEN_CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR
+    | TOKEN_FUNCTION_OPERATOR
+    | TOKEN_DOTDOT
+    | TOKEN_CLOSING_BRACE
+    | TOKEN_OPENING_BRACE
+    | TOKEN_COMMA
+    | TOKEN_CLOSING_PARENTHESIS
+    | TOKEN_OPENING_PARENTHESIS
+    | TOKEN_FORWARD_PIPELINE_OPERATOR
+    | TOKEN_MULTIPLICATIVE_OPERATOR
+    | TOKEN_ADDITIVE_OPERATOR
     | TOKEN_EOF
     | TOKEN_LPAREN
     | TOKEN_RPAREN
+    | TOKEN_IDENTIFIER_WITH_PRIME
+    | TOKEN_IDENTIFIER
+    | TOKEN_APPLICATION
+    | TOKEN_WHITESPACE
     | TOKEN_OP
-    | TOKEN_Number
+    | TOKEN_LITERAL
     | TOKEN_end_of_input
     | TOKEN_error
 // This type is used to give symbolic names to token indexes, useful for error messages
 type nonTerminalId = 
     | NONTERM__startparse
     | NONTERM_parse
-    | NONTERM_expr
+    | NONTERM_expression
+    | NONTERM_arithmetic_expression
+    | NONTERM_additive_expression
+    | NONTERM_multiplicative_expression
+    | NONTERM_primary_expression
+    | NONTERM_literal_expression
+    | NONTERM_identifier_expression
+    | NONTERM_invoke_expression
+    | NONTERM_forward_pipeline_expression
+    | NONTERM_parenthesized_expression
+    | NONTERM_list_expression
+    | NONTERM_item_list
+    | NONTERM_item_list_opt
+    | NONTERM_item
+    | NONTERM_function_expression
+    | NONTERM_function_body
+    | NONTERM_parameter_list
+    | NONTERM_parameter_list_opt
+    | NONTERM_parameter
 
 // This function maps tokens to integer indexes
 let tagOfToken (t:token) = 
   match t with
-  | EOF  -> 0 
-  | LPAREN  -> 1 
-  | RPAREN  -> 2 
-  | OP _ -> 3 
-  | Number _ -> 4 
+  | CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR _ -> 0 
+  | FUNCTION_OPERATOR _ -> 1 
+  | DOTDOT _ -> 2 
+  | CLOSING_BRACE _ -> 3 
+  | OPENING_BRACE _ -> 4 
+  | COMMA _ -> 5 
+  | CLOSING_PARENTHESIS _ -> 6 
+  | OPENING_PARENTHESIS _ -> 7 
+  | FORWARD_PIPELINE_OPERATOR _ -> 8 
+  | MULTIPLICATIVE_OPERATOR _ -> 9 
+  | ADDITIVE_OPERATOR _ -> 10 
+  | EOF  -> 11 
+  | LPAREN  -> 12 
+  | RPAREN  -> 13 
+  | IDENTIFIER_WITH_PRIME _ -> 14 
+  | IDENTIFIER _ -> 15 
+  | APPLICATION _ -> 16 
+  | WHITESPACE _ -> 17 
+  | OP _ -> 18 
+  | LITERAL _ -> 19 
 
 // This function maps integer indexes to symbolic token ids
 let tokenTagToTokenId (tokenIdx:int) = 
   match tokenIdx with
-  | 0 -> TOKEN_EOF 
-  | 1 -> TOKEN_LPAREN 
-  | 2 -> TOKEN_RPAREN 
-  | 3 -> TOKEN_OP 
-  | 4 -> TOKEN_Number 
-  | 7 -> TOKEN_end_of_input
-  | 5 -> TOKEN_error
+  | 0 -> TOKEN_CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR 
+  | 1 -> TOKEN_FUNCTION_OPERATOR 
+  | 2 -> TOKEN_DOTDOT 
+  | 3 -> TOKEN_CLOSING_BRACE 
+  | 4 -> TOKEN_OPENING_BRACE 
+  | 5 -> TOKEN_COMMA 
+  | 6 -> TOKEN_CLOSING_PARENTHESIS 
+  | 7 -> TOKEN_OPENING_PARENTHESIS 
+  | 8 -> TOKEN_FORWARD_PIPELINE_OPERATOR 
+  | 9 -> TOKEN_MULTIPLICATIVE_OPERATOR 
+  | 10 -> TOKEN_ADDITIVE_OPERATOR 
+  | 11 -> TOKEN_EOF 
+  | 12 -> TOKEN_LPAREN 
+  | 13 -> TOKEN_RPAREN 
+  | 14 -> TOKEN_IDENTIFIER_WITH_PRIME 
+  | 15 -> TOKEN_IDENTIFIER 
+  | 16 -> TOKEN_APPLICATION 
+  | 17 -> TOKEN_WHITESPACE 
+  | 18 -> TOKEN_OP 
+  | 19 -> TOKEN_LITERAL 
+  | 22 -> TOKEN_end_of_input
+  | 20 -> TOKEN_error
   | _ -> failwith "tokenTagToTokenId: bad token"
 
 /// This function maps production indexes returned in syntax errors to strings representing the non terminal that would be produced by that production
@@ -62,99 +162,518 @@ let prodIdxToNonTerminal (prodIdx:int) =
   match prodIdx with
     | 0 -> NONTERM__startparse 
     | 1 -> NONTERM_parse 
-    | 2 -> NONTERM_expr 
-    | 3 -> NONTERM_expr 
-    | 4 -> NONTERM_expr 
+    | 2 -> NONTERM_parse 
+    | 3 -> NONTERM_expression 
+    | 4 -> NONTERM_expression 
+    | 5 -> NONTERM_arithmetic_expression 
+    | 6 -> NONTERM_additive_expression 
+    | 7 -> NONTERM_additive_expression 
+    | 8 -> NONTERM_multiplicative_expression 
+    | 9 -> NONTERM_multiplicative_expression 
+    | 10 -> NONTERM_primary_expression 
+    | 11 -> NONTERM_primary_expression 
+    | 12 -> NONTERM_primary_expression 
+    | 13 -> NONTERM_primary_expression 
+    | 14 -> NONTERM_primary_expression 
+    | 15 -> NONTERM_primary_expression 
+    | 16 -> NONTERM_literal_expression 
+    | 17 -> NONTERM_identifier_expression 
+    | 18 -> NONTERM_identifier_expression 
+    | 19 -> NONTERM_invoke_expression 
+    | 20 -> NONTERM_forward_pipeline_expression 
+    | 21 -> NONTERM_parenthesized_expression 
+    | 22 -> NONTERM_list_expression 
+    | 23 -> NONTERM_item_list 
+    | 24 -> NONTERM_item_list 
+    | 25 -> NONTERM_item_list_opt 
+    | 26 -> NONTERM_item_list_opt 
+    | 27 -> NONTERM_item 
+    | 28 -> NONTERM_item 
+    | 29 -> NONTERM_function_expression 
+    | 30 -> NONTERM_function_body 
+    | 31 -> NONTERM_parameter_list 
+    | 32 -> NONTERM_parameter_list 
+    | 33 -> NONTERM_parameter_list_opt 
+    | 34 -> NONTERM_parameter_list_opt 
+    | 35 -> NONTERM_parameter 
     | _ -> failwith "prodIdxToNonTerminal: bad production index"
 
-let _fsyacc_endOfInputTag = 7 
-let _fsyacc_tagOfErrorTerminal = 5
+let _fsyacc_endOfInputTag = 22 
+let _fsyacc_tagOfErrorTerminal = 20
 
 // This function gets the name of a token as a string
 let token_to_string (t:token) = 
   match t with 
+  | CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR _ -> "CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR" 
+  | FUNCTION_OPERATOR _ -> "FUNCTION_OPERATOR" 
+  | DOTDOT _ -> "DOTDOT" 
+  | CLOSING_BRACE _ -> "CLOSING_BRACE" 
+  | OPENING_BRACE _ -> "OPENING_BRACE" 
+  | COMMA _ -> "COMMA" 
+  | CLOSING_PARENTHESIS _ -> "CLOSING_PARENTHESIS" 
+  | OPENING_PARENTHESIS _ -> "OPENING_PARENTHESIS" 
+  | FORWARD_PIPELINE_OPERATOR _ -> "FORWARD_PIPELINE_OPERATOR" 
+  | MULTIPLICATIVE_OPERATOR _ -> "MULTIPLICATIVE_OPERATOR" 
+  | ADDITIVE_OPERATOR _ -> "ADDITIVE_OPERATOR" 
   | EOF  -> "EOF" 
   | LPAREN  -> "LPAREN" 
   | RPAREN  -> "RPAREN" 
+  | IDENTIFIER_WITH_PRIME _ -> "IDENTIFIER_WITH_PRIME" 
+  | IDENTIFIER _ -> "IDENTIFIER" 
+  | APPLICATION _ -> "APPLICATION" 
+  | WHITESPACE _ -> "WHITESPACE" 
   | OP _ -> "OP" 
-  | Number _ -> "Number" 
+  | LITERAL _ -> "LITERAL" 
 
 // This function gets the data carried by a token as an object
 let _fsyacc_dataOfToken (t:token) = 
   match t with 
+  | CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | FUNCTION_OPERATOR _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | DOTDOT _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | CLOSING_BRACE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | OPENING_BRACE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | COMMA _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | CLOSING_PARENTHESIS _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | OPENING_PARENTHESIS _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | FORWARD_PIPELINE_OPERATOR _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | MULTIPLICATIVE_OPERATOR _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | ADDITIVE_OPERATOR _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | EOF  -> (null : System.Object) 
   | LPAREN  -> (null : System.Object) 
   | RPAREN  -> (null : System.Object) 
+  | IDENTIFIER_WITH_PRIME _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | IDENTIFIER _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | APPLICATION _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | WHITESPACE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | OP _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | Number _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-let _fsyacc_gotos = [| 0us; 65535us; 1us; 65535us; 0us; 1us; 3us; 65535us; 0us; 2us; 7us; 5us; 8us; 6us; |]
-let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 3us; |]
-let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 2us; 1us; 3us; 1us; 1us; 1us; 2us; 2us; 3us; 3us; 2us; 3us; 4us; 1us; 3us; 1us; 4us; 1us; 4us; |]
-let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 7us; 9us; 11us; 14us; 17us; 19us; 21us; |]
-let _fsyacc_action_rows = 10
-let _fsyacc_actionTableElements = [|2us; 32768us; 1us; 8us; 4us; 4us; 0us; 49152us; 2us; 32768us; 0us; 3us; 3us; 7us; 0us; 16385us; 0us; 16386us; 1us; 16387us; 3us; 7us; 2us; 32768us; 2us; 9us; 3us; 7us; 2us; 32768us; 1us; 8us; 4us; 4us; 2us; 32768us; 1us; 8us; 4us; 4us; 0us; 16388us; |]
-let _fsyacc_actionTableRowOffsets = [|0us; 3us; 4us; 7us; 8us; 9us; 11us; 14us; 17us; 20us; |]
-let _fsyacc_reductionSymbolCounts = [|1us; 2us; 1us; 3us; 3us; |]
-let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 2us; 2us; |]
-let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 16385us; 16386us; 65535us; 65535us; 65535us; 65535us; 16388us; |]
+  | LITERAL _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+let _fsyacc_gotos = [| 0us; 65535us; 1us; 65535us; 0us; 1us; 10us; 65535us; 0us; 2us; 10us; 24us; 12us; 24us; 30us; 23us; 31us; 25us; 32us; 26us; 34us; 27us; 38us; 27us; 41us; 28us; 43us; 29us; 10us; 65535us; 0us; 4us; 10us; 4us; 12us; 4us; 30us; 4us; 31us; 4us; 32us; 4us; 34us; 4us; 38us; 4us; 41us; 4us; 43us; 4us; 10us; 65535us; 0us; 6us; 10us; 7us; 12us; 6us; 30us; 6us; 31us; 6us; 32us; 6us; 34us; 6us; 38us; 6us; 41us; 6us; 43us; 6us; 10us; 65535us; 0us; 8us; 10us; 8us; 12us; 9us; 30us; 8us; 31us; 8us; 32us; 8us; 34us; 8us; 38us; 8us; 41us; 8us; 43us; 8us; 10us; 65535us; 0us; 11us; 10us; 11us; 12us; 11us; 30us; 11us; 31us; 11us; 32us; 11us; 34us; 11us; 38us; 11us; 41us; 11us; 43us; 11us; 10us; 65535us; 0us; 13us; 10us; 13us; 12us; 13us; 30us; 13us; 31us; 13us; 32us; 13us; 34us; 13us; 38us; 13us; 41us; 13us; 43us; 13us; 10us; 65535us; 0us; 14us; 10us; 14us; 12us; 14us; 30us; 14us; 31us; 14us; 32us; 14us; 34us; 14us; 38us; 14us; 41us; 14us; 43us; 14us; 10us; 65535us; 0us; 15us; 10us; 15us; 12us; 15us; 30us; 15us; 31us; 15us; 32us; 15us; 34us; 15us; 38us; 15us; 41us; 15us; 43us; 15us; 10us; 65535us; 0us; 16us; 10us; 16us; 12us; 16us; 30us; 16us; 31us; 16us; 32us; 16us; 34us; 16us; 38us; 16us; 41us; 16us; 43us; 16us; 10us; 65535us; 0us; 17us; 10us; 17us; 12us; 17us; 30us; 17us; 31us; 17us; 32us; 17us; 34us; 17us; 38us; 17us; 41us; 17us; 43us; 17us; 10us; 65535us; 0us; 18us; 10us; 18us; 12us; 18us; 30us; 18us; 31us; 18us; 32us; 18us; 34us; 18us; 38us; 18us; 41us; 18us; 43us; 18us; 2us; 65535us; 34us; 40us; 38us; 39us; 1us; 65535us; 34us; 35us; 2us; 65535us; 34us; 37us; 38us; 37us; 10us; 65535us; 0us; 5us; 10us; 5us; 12us; 5us; 30us; 5us; 31us; 5us; 32us; 5us; 34us; 5us; 38us; 5us; 41us; 5us; 43us; 5us; 1us; 65535us; 43us; 44us; 2us; 65535us; 32us; 48us; 46us; 47us; 1us; 65535us; 32us; 42us; 2us; 65535us; 32us; 45us; 46us; 45us; |]
+let _fsyacc_sparseGotoTableRowOffsets = [|0us; 1us; 3us; 14us; 25us; 36us; 47us; 58us; 69us; 80us; 91us; 102us; 113us; 124us; 127us; 129us; 132us; 143us; 145us; 148us; 150us; |]
+let _fsyacc_stateToProdIdxsTableElements = [| 1us; 0us; 1us; 0us; 4us; 1us; 2us; 19us; 20us; 2us; 1us; 2us; 1us; 3us; 1us; 4us; 1us; 5us; 2us; 5us; 7us; 2us; 6us; 7us; 3us; 6us; 7us; 9us; 1us; 7us; 2us; 8us; 9us; 1us; 9us; 1us; 10us; 1us; 11us; 1us; 12us; 1us; 13us; 1us; 14us; 1us; 15us; 1us; 16us; 1us; 17us; 2us; 17us; 35us; 1us; 18us; 3us; 19us; 19us; 20us; 2us; 19us; 20us; 3us; 19us; 20us; 20us; 3us; 19us; 20us; 21us; 4us; 19us; 20us; 27us; 28us; 3us; 19us; 20us; 28us; 3us; 19us; 20us; 30us; 1us; 19us; 1us; 20us; 2us; 21us; 29us; 1us; 21us; 1us; 22us; 1us; 22us; 1us; 22us; 2us; 23us; 24us; 1us; 24us; 1us; 24us; 1us; 26us; 1us; 28us; 1us; 29us; 1us; 29us; 1us; 29us; 2us; 31us; 32us; 1us; 32us; 1us; 32us; 1us; 34us; 1us; 35us; |]
+let _fsyacc_stateToProdIdxsTableRowOffsets = [|0us; 2us; 4us; 9us; 12us; 14us; 16us; 18us; 21us; 24us; 28us; 30us; 33us; 35us; 37us; 39us; 41us; 43us; 45us; 47us; 49us; 51us; 54us; 56us; 60us; 63us; 67us; 71us; 76us; 80us; 84us; 86us; 88us; 91us; 93us; 95us; 97us; 99us; 102us; 104us; 106us; 108us; 110us; 112us; 114us; 116us; 119us; 121us; 123us; 125us; |]
+let _fsyacc_action_rows = 50
+let _fsyacc_actionTableElements = [|5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 0us; 49152us; 3us; 32768us; 8us; 31us; 11us; 3us; 17us; 30us; 0us; 16385us; 0us; 16387us; 0us; 16388us; 0us; 16389us; 7us; 16389us; 2us; 16391us; 3us; 16391us; 5us; 16391us; 6us; 16391us; 9us; 16391us; 10us; 16391us; 11us; 16391us; 1us; 16390us; 10us; 10us; 7us; 16390us; 2us; 16393us; 3us; 16393us; 5us; 16393us; 6us; 16393us; 9us; 16393us; 10us; 16393us; 11us; 16393us; 5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 1us; 16392us; 9us; 12us; 5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 0us; 16394us; 0us; 16395us; 0us; 16396us; 0us; 16397us; 0us; 16398us; 0us; 16399us; 0us; 16400us; 0us; 16401us; 2us; 16401us; 0us; 16419us; 5us; 16419us; 0us; 16402us; 0us; 16403us; 2us; 32768us; 8us; 31us; 17us; 30us; 1us; 16404us; 17us; 30us; 3us; 32768us; 6us; 33us; 8us; 31us; 17us; 30us; 3us; 16411us; 2us; 41us; 8us; 31us; 17us; 30us; 2us; 16412us; 8us; 31us; 17us; 30us; 2us; 16414us; 8us; 31us; 17us; 30us; 5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 5us; 16417us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 21us; 19us; 19us; 0us; 16405us; 5us; 16409us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 1us; 32768us; 3us; 36us; 0us; 16406us; 1us; 16407us; 5us; 38us; 5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 0us; 16408us; 0us; 16410us; 5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 1us; 32768us; 0us; 43us; 5us; 32768us; 4us; 34us; 7us; 32us; 14us; 22us; 15us; 20us; 19us; 19us; 0us; 16413us; 1us; 16415us; 5us; 46us; 1us; 32768us; 15us; 49us; 0us; 16416us; 0us; 16418us; 0us; 16419us; |]
+let _fsyacc_actionTableRowOffsets = [|0us; 6us; 7us; 11us; 12us; 13us; 14us; 15us; 23us; 25us; 33us; 39us; 41us; 47us; 48us; 49us; 50us; 51us; 52us; 53us; 54us; 55us; 58us; 59us; 60us; 63us; 65us; 69us; 73us; 76us; 79us; 85us; 91us; 97us; 98us; 104us; 106us; 107us; 109us; 115us; 116us; 117us; 123us; 125us; 131us; 132us; 134us; 136us; 137us; 138us; |]
+let _fsyacc_reductionSymbolCounts = [|1us; 2us; 2us; 1us; 1us; 1us; 1us; 3us; 1us; 3us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 1us; 3us; 3us; 3us; 3us; 1us; 3us; 0us; 1us; 1us; 3us; 4us; 1us; 1us; 3us; 0us; 1us; 1us; |]
+let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 1us; 2us; 2us; 3us; 4us; 4us; 5us; 5us; 6us; 6us; 6us; 6us; 6us; 6us; 7us; 8us; 8us; 9us; 10us; 11us; 12us; 13us; 13us; 14us; 14us; 15us; 15us; 16us; 17us; 18us; 18us; 19us; 19us; 20us; |]
+let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 65535us; 16387us; 16388us; 16389us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16394us; 16395us; 16396us; 16397us; 16398us; 16399us; 16400us; 16401us; 65535us; 16402us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16405us; 65535us; 65535us; 16406us; 65535us; 65535us; 16408us; 16410us; 65535us; 65535us; 65535us; 16413us; 65535us; 65535us; 16416us; 16418us; 16419us; |]
 let _fsyacc_reductions ()  =    [| 
-# 101 "Parser.fs"
+# 262 "Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
-            let _1 = parseState.GetInput(1) :?> int in
+            let _1 = parseState.GetInput(1) :?> string in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
                       raise (FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : 'gentype__startparse));
-# 110 "Parser.fs"
+# 271 "Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
-            let _1 = parseState.GetInput(1) :?> 'gentype_expr in
+            let _1 = parseState.GetInput(1) :?> 'gentype_expression in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 18 "Parser.fsy"
-                                                    _1 
+# 65 "Parser.fsy"
+                                             boilerplate + _1 
                    )
-# 18 "Parser.fsy"
-                 : int));
-# 121 "Parser.fs"
+# 65 "Parser.fsy"
+                 : string));
+# 282 "Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
-            let _1 = parseState.GetInput(1) :?> int in
+            let _1 = parseState.GetInput(1) :?> 'gentype_expression in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 20 "Parser.fsy"
-                                                    _1 
+# 66 "Parser.fsy"
+                                            boilerplate + _1 
                    )
-# 20 "Parser.fsy"
-                 : 'gentype_expr));
-# 132 "Parser.fs"
+# 66 "Parser.fsy"
+                 : string));
+# 293 "Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
-            let _1 = parseState.GetInput(1) :?> 'gentype_expr in
+            let _1 = parseState.GetInput(1) :?> 'gentype_arithmetic_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 69 "Parser.fsy"
+                                                     _1 
+                   )
+# 69 "Parser.fsy"
+                 : 'gentype_expression));
+# 304 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_function_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 70 "Parser.fsy"
+                                                 _1 
+                   )
+# 70 "Parser.fsy"
+                 : 'gentype_expression));
+# 315 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_additive_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 73 "Parser.fsy"
+                                               _1 
+                   )
+# 73 "Parser.fsy"
+                 : 'gentype_arithmetic_expression));
+# 326 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_multiplicative_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 76 "Parser.fsy"
+                                                         _1 
+                   )
+# 76 "Parser.fsy"
+                 : 'gentype_additive_expression));
+# 337 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_multiplicative_expression in
             let _2 = parseState.GetInput(2) :?> string in
-            let _3 = parseState.GetInput(3) :?> 'gentype_expr in
+            let _3 = parseState.GetInput(3) :?> 'gentype_additive_expression in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 21 "Parser.fsy"
-                                                    _1 |> (getOp _2) <| _3 
+# 78 "Parser.fsy"
+                               $"{_1}{_2}{_3}" 
                    )
-# 21 "Parser.fsy"
-                 : 'gentype_expr));
-# 145 "Parser.fs"
+# 78 "Parser.fsy"
+                 : 'gentype_additive_expression));
+# 350 "Parser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
-            let _2 = parseState.GetInput(2) :?> 'gentype_expr in
+            let _1 = parseState.GetInput(1) :?> 'gentype_primary_expression in
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 22 "Parser.fsy"
-                                                    _2 
+# 81 "Parser.fsy"
+                                                                 _1 
                    )
-# 22 "Parser.fsy"
-                 : 'gentype_expr));
+# 81 "Parser.fsy"
+                 : 'gentype_multiplicative_expression));
+# 361 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_primary_expression in
+            let _2 = parseState.GetInput(2) :?> string in
+            let _3 = parseState.GetInput(3) :?> 'gentype_multiplicative_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 82 "Parser.fsy"
+                                                                                                   $"{_1}{_2}{_3}" 
+                   )
+# 82 "Parser.fsy"
+                 : 'gentype_multiplicative_expression));
+# 374 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_literal_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 85 "Parser.fsy"
+                                                                 _1 
+                   )
+# 85 "Parser.fsy"
+                 : 'gentype_primary_expression));
+# 385 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_identifier_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 86 "Parser.fsy"
+                                                               _1 
+                   )
+# 86 "Parser.fsy"
+                 : 'gentype_primary_expression));
+# 396 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_invoke_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 87 "Parser.fsy"
+                                                               _1 
+                   )
+# 87 "Parser.fsy"
+                 : 'gentype_primary_expression));
+# 407 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_forward_pipeline_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 88 "Parser.fsy"
+                                                               _1 
+                   )
+# 88 "Parser.fsy"
+                 : 'gentype_primary_expression));
+# 418 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_parenthesized_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 89 "Parser.fsy"
+                                                               _1 
+                   )
+# 89 "Parser.fsy"
+                 : 'gentype_primary_expression));
+# 429 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_list_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 90 "Parser.fsy"
+                                                               _1 
+                   )
+# 90 "Parser.fsy"
+                 : 'gentype_primary_expression));
+# 440 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> string in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 93 "Parser.fsy"
+                                                               _1 
+                   )
+# 93 "Parser.fsy"
+                 : 'gentype_literal_expression));
+# 451 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> string in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 96 "Parser.fsy"
+                                                                _1 
+                   )
+# 96 "Parser.fsy"
+                 : 'gentype_identifier_expression));
+# 462 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> string in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 97 "Parser.fsy"
+                                                              $"Usagi_Nakamura.Curry({_1})" 
+                   )
+# 97 "Parser.fsy"
+                 : 'gentype_identifier_expression));
+# 473 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_expression in
+            let _2 = parseState.GetInput(2) :?> string in
+            let _3 = parseState.GetInput(3) :?> 'gentype_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 100 "Parser.fsy"
+                                                                $"{_1}{_2}({_3})" 
+                   )
+# 100 "Parser.fsy"
+                 : 'gentype_invoke_expression));
+# 486 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_expression in
+            let _2 = parseState.GetInput(2) :?> string in
+            let _3 = parseState.GetInput(3) :?> 'gentype_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 103 "Parser.fsy"
+                                                                           $"{_3}({_1})" 
+                   )
+# 103 "Parser.fsy"
+                 : 'gentype_forward_pipeline_expression));
+# 499 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> string in
+            let _2 = parseState.GetInput(2) :?> 'gentype_expression in
+            let _3 = parseState.GetInput(3) :?> string in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 106 "Parser.fsy"
+                                                                              $"({_2})" 
+                   )
+# 106 "Parser.fsy"
+                 : 'gentype_parenthesized_expression));
+# 512 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> string in
+            let _2 = parseState.GetInput(2) :?> 'gentype_item_list_opt in
+            let _3 = parseState.GetInput(3) :?> string in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 109 "Parser.fsy"
+                                                                     "{" + _2 + "}" 
+                   )
+# 109 "Parser.fsy"
+                 : 'gentype_list_expression));
+# 525 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_item in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 112 "Parser.fsy"
+                                  _1 
+                   )
+# 112 "Parser.fsy"
+                 : 'gentype_item_list));
+# 536 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_item in
+            let _2 = parseState.GetInput(2) :?> string in
+            let _3 = parseState.GetInput(3) :?> 'gentype_item_list in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 113 "Parser.fsy"
+                                                  $"{_1}{_2}{_3}" 
+                   )
+# 113 "Parser.fsy"
+                 : 'gentype_item_list));
+# 549 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 116 "Parser.fsy"
+                                         "" 
+                   )
+# 116 "Parser.fsy"
+                 : 'gentype_item_list_opt));
+# 559 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_item_list in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 117 "Parser.fsy"
+                                       _1 
+                   )
+# 117 "Parser.fsy"
+                 : 'gentype_item_list_opt));
+# 570 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 120 "Parser.fsy"
+                                        _1 
+                   )
+# 120 "Parser.fsy"
+                 : 'gentype_item));
+# 581 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_expression in
+            let _2 = parseState.GetInput(2) :?> string in
+            let _3 = parseState.GetInput(3) :?> 'gentype_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 121 "Parser.fsy"
+                                                          $"{_1}{_2}{_3}" 
+                   )
+# 121 "Parser.fsy"
+                 : 'gentype_item));
+# 594 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> string in
+            let _2 = parseState.GetInput(2) :?> 'gentype_parameter_list_opt in
+            let _3 = parseState.GetInput(3) :?> string in
+            let _4 = parseState.GetInput(4) :?> 'gentype_function_body in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 125 "Parser.fsy"
+                             $"({_2})=>{_4}" 
+                   )
+# 125 "Parser.fsy"
+                 : 'gentype_function_expression));
+# 608 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_expression in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 128 "Parser.fsy"
+                                      _1 
+                   )
+# 128 "Parser.fsy"
+                 : 'gentype_function_body));
+# 619 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_parameter in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 131 "Parser.fsy"
+                                       _1 
+                   )
+# 131 "Parser.fsy"
+                 : 'gentype_parameter_list));
+# 630 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_parameter in
+            let _2 = parseState.GetInput(2) :?> string in
+            let _3 = parseState.GetInput(3) :?> 'gentype_parameter_list in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 132 "Parser.fsy"
+                                                            $"{_1},{_3}" 
+                   )
+# 132 "Parser.fsy"
+                 : 'gentype_parameter_list));
+# 643 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 135 "Parser.fsy"
+                                         "" 
+                   )
+# 135 "Parser.fsy"
+                 : 'gentype_parameter_list_opt));
+# 653 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> 'gentype_parameter_list in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 136 "Parser.fsy"
+                                            _1 
+                   )
+# 136 "Parser.fsy"
+                 : 'gentype_parameter_list_opt));
+# 664 "Parser.fs"
+        (fun (parseState : FSharp.Text.Parsing.IParseState) ->
+            let _1 = parseState.GetInput(1) :?> string in
+            Microsoft.FSharp.Core.Operators.box
+                (
+                   (
+# 139 "Parser.fsy"
+                                        _1 
+                   )
+# 139 "Parser.fsy"
+                 : 'gentype_parameter));
 |]
-# 157 "Parser.fs"
+# 676 "Parser.fs"
 let tables : FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
@@ -173,8 +692,8 @@ let tables : FSharp.Text.Parsing.Tables<_> =
                               match parse_error_rich with 
                               | Some f -> f ctxt
                               | None -> parse_error ctxt.Message);
-    numTerminals = 8;
+    numTerminals = 23;
     productionToNonTerminalTable = _fsyacc_productionToNonTerminalTable  }
 let engine lexer lexbuf startState = tables.Interpret(lexer, lexbuf, startState)
-let parse lexer lexbuf : int =
+let parse lexer lexbuf : string =
     engine lexer lexbuf 0 :?> _

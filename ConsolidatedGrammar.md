@@ -1,9 +1,9 @@
-# Lexical grammar
-## lexical-unit:
+Lexical grammar
+lexical-unit:
       lexical-elementsopt
-## lexical-elements:
+lexical-elements:
       lexical-element lexical-elementsopt
-## lexical-element:
+lexical-element:
       whitespace
       token comment
 
