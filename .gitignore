@@ -453,3 +453,14 @@ bower_components
 
 ### WebSharper ###
 Scripts/
+
+### Added for this project ###
+Lexer.fs
+Parser.fs
+Parser.fsi
+
+*.xlsx
+*.pqmf
+*.pq
+
+.gitignore
