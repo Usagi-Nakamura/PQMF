@@ -187,7 +187,7 @@ and tokenize  lexbuf =
   match _fslex_tables.Interpret(0,lexbuf) with
   | 0 -> ( 
 # 149 "Lexer.fsl"
-                             LITERAL (lexeme lexbuf) 
+                           LITERAL (lexeme lexbuf) 
 # 191 "Lexer.fs"
           )
   | 1 -> ( 
@@ -215,23 +215,28 @@ and tokenize  lexbuf =
           )
   | 4 -> ( 
 # 162 "Lexer.fsl"
-                                 IDENTIFIER (lexeme lexbuf) 
-# 219 "Lexer.fs"
-          )
-  | 5 -> ( 
-# 163 "Lexer.fsl"
-                                 WHITESPACE ((lexeme lexbuf) |> trimWhite) 
+                              
+                   let s = lexeme lexbuf
+                   match (keywords |> Map.containsKey (s)) with
+                   | true -> keywords[s](s)
+                   | false -> IDENTIFIER (lexeme lexbuf) 
+                 
 # 224 "Lexer.fs"
           )
-  | 6 -> ( 
-# 164 "Lexer.fsl"
-                                     EOF 
+  | 5 -> ( 
+# 168 "Lexer.fsl"
+                                 WHITESPACE ((lexeme lexbuf) |> trimWhite) 
 # 229 "Lexer.fs"
           )
-  | 7 -> ( 
-# 165 "Lexer.fsl"
-                     lexeme lexbuf |> sprintf "Parsing error: %s" |> failwith 
+  | 6 -> ( 
+# 169 "Lexer.fsl"
+                                     EOF 
 # 234 "Lexer.fs"
+          )
+  | 7 -> ( 
+# 170 "Lexer.fsl"
+                     lexeme lexbuf |> sprintf "Parsing error: %s" |> failwith 
+# 239 "Lexer.fs"
           )
   | _ -> failwith "tokenize"
 
