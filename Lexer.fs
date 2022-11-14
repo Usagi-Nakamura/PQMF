@@ -1,11 +1,13 @@
 module Lexer
 # 1 "Lexer.fsl"
  
+    
 open System
 open FSharp.Text.Lexing
 open Parser
 
 let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
+
 let operators =
 
     [
@@ -29,12 +31,53 @@ let operators =
 
     ] |> Map.ofList
 
+let keywords =
+
+    [
+                 
+        "and", AND;
+        "each", EACH;
+        "else", ELSE;
+        "error", ERROR;
+        "as", AS;
+        "false", FALSE;
+        "if", IF;
+        "in", IN;
+        "is", IS;
+        "let", LET;
+        "meta", META;
+        "not", NOT;
+        "null", NULL;
+        "or", OR;
+        "otherwise", OTHERWISE;
+        "section", SECTION;
+        "shared", SHARED;
+        "then", THEN;
+        "true", TRUE;
+        "try", TRY;
+        "type", TYPE;
+        "#binary", SHARP_BINARY;
+        "#date", SHARP_DATE;
+        "#datetime", SHARP_DATETIME;
+        "#datetimezone", SHARP_DATETIMEZONE;
+        "#duration", SHARP_DURATION;
+        "#infinity", SHARP_INFINITY;
+        "#nan", SHARP_NAN;
+        "#sections", SHARP_SECTION;
+        "#shared", SHARP_SHARED;
+        "#table", SHARP_TABLE;
+        "#time", SHARP_TIME;
+
+    ] |> Map.ofList
+
+
 let removePrime (s: string) = s.Substring(0, s.Length - 1) 
 
 let trimWhiteAndNewLine (s: string) = s.Trim([| ' '; '\t'; '\n'; '\r' |])
 let trimWhite (s: string) = s.Trim([| ' '; '\t' |])
 
-# 37 "Lexer.fs"
+
+# 80 "Lexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -143,52 +186,52 @@ let rec _fslex_dummy () = _fslex_dummy()
 and tokenize  lexbuf =
   match _fslex_tables.Interpret(0,lexbuf) with
   | 0 -> ( 
-# 106 "Lexer.fsl"
+# 149 "Lexer.fsl"
                              LITERAL (lexeme lexbuf) 
-# 148 "Lexer.fs"
+# 191 "Lexer.fs"
           )
   | 1 -> ( 
-# 108 "Lexer.fsl"
+# 151 "Lexer.fsl"
                    CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR ") =>" 
-# 153 "Lexer.fs"
+# 196 "Lexer.fs"
           )
   | 2 -> ( 
-# 109 "Lexer.fsl"
+# 152 "Lexer.fsl"
                              
                    let tok = lexeme lexbuf
                    let s = ( tok |> trimWhiteAndNewLine)
                    let s' = ( tok |> trimWhite)
                    operators[s](s') 
                  
-# 163 "Lexer.fs"
+# 206 "Lexer.fs"
           )
   | 3 -> ( 
-# 115 "Lexer.fsl"
+# 158 "Lexer.fsl"
                                          
                    let s = lexeme lexbuf
                    IDENTIFIER_WITH_PRIME ( s |> removePrime ) 
                  
-# 171 "Lexer.fs"
+# 214 "Lexer.fs"
           )
   | 4 -> ( 
-# 119 "Lexer.fsl"
+# 162 "Lexer.fsl"
                                  IDENTIFIER (lexeme lexbuf) 
-# 176 "Lexer.fs"
+# 219 "Lexer.fs"
           )
   | 5 -> ( 
-# 120 "Lexer.fsl"
+# 163 "Lexer.fsl"
                                  WHITESPACE ((lexeme lexbuf) |> trimWhite) 
-# 181 "Lexer.fs"
+# 224 "Lexer.fs"
           )
   | 6 -> ( 
-# 121 "Lexer.fsl"
+# 164 "Lexer.fsl"
                                      EOF 
-# 186 "Lexer.fs"
+# 229 "Lexer.fs"
           )
   | 7 -> ( 
-# 122 "Lexer.fsl"
+# 165 "Lexer.fsl"
                      lexeme lexbuf |> sprintf "Parsing error: %s" |> failwith 
-# 191 "Lexer.fs"
+# 234 "Lexer.fs"
           )
   | _ -> failwith "tokenize"
 
