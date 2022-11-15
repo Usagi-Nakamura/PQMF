@@ -21,4 +21,8 @@ in
 // End of Boilerplate
 ///////////////////////////////////////////////////////////////////////////////////
 
-Usagi_Nakamura.Curry(List.Transform)((x)=>x*2)({1..10})
+let 
+    a = 2,
+    b = Usagi_Nakamura.Curry(List.Transform)((x)=>x * 2)({a..10}) 
+in 
+    b

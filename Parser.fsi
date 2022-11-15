@@ -33,6 +33,7 @@ type token =
   | LET of (string)
   | META of (string)
   | NOT of (string)
+  | EQ of (string)
   | CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR of (string)
   | FUNCTION_OPERATOR of (string)
   | DOTDOT of (string)
@@ -86,6 +87,7 @@ type tokenId =
     | TOKEN_LET
     | TOKEN_META
     | TOKEN_NOT
+    | TOKEN_EQ
     | TOKEN_CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR
     | TOKEN_FUNCTION_OPERATOR
     | TOKEN_DOTDOT
@@ -130,6 +132,10 @@ type nonTerminalId =
     | NONTERM_parameter_list
     | NONTERM_parameter_list_opt
     | NONTERM_parameter
+    | NONTERM_let_expression
+    | NONTERM_variable_list
+    | NONTERM_variable
+    | NONTERM_variable_name
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 

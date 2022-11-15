@@ -1,1 +1,5 @@
-{ 1..10 } |> List.Transform' (x) => x * 2
+let 
+    a = 2,
+    b = { a..10 } |> List.Transform' (x) => x * 2 
+in 
+    b
