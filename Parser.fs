@@ -38,17 +38,17 @@ let boilerplate =
 # 38 "Parser.fs"
 // This type is the type of tokens accepted by the parser
 type token = 
-  | SHARP_SHARED of (string)
-  | SHARP_TABLE of (string)
-  | SHARP_TIME of (string)
-  | SHARP_DURATION of (string)
-  | SHARP_INFINITY of (string)
-  | SHARP_NAN of (string)
-  | SHARP_SECTION of (string)
-  | SHARP_BINARY of (string)
-  | SHARP_DATE of (string)
-  | SHARP_DATETIME of (string)
-  | SHARP_DATETIMEZONE of (string)
+  | HASH_SHARED of (string)
+  | HASH_TABLE of (string)
+  | HASH_TIME of (string)
+  | HASH_DURATION of (string)
+  | HASH_INFINITY of (string)
+  | HASH_NAN of (string)
+  | HASH_SECTION of (string)
+  | HASH_BINARY of (string)
+  | HASH_DATE of (string)
+  | HASH_DATETIME of (string)
+  | HASH_DATETIMEZONE of (string)
   | NULL of (string)
   | OR of (string)
   | OTHERWISE of (string)
@@ -93,17 +93,17 @@ type token =
   | LITERAL of (string)
 // This type is used to give symbolic names to token indexes, useful for error messages
 type tokenId = 
-    | TOKEN_SHARP_SHARED
-    | TOKEN_SHARP_TABLE
-    | TOKEN_SHARP_TIME
-    | TOKEN_SHARP_DURATION
-    | TOKEN_SHARP_INFINITY
-    | TOKEN_SHARP_NAN
-    | TOKEN_SHARP_SECTION
-    | TOKEN_SHARP_BINARY
-    | TOKEN_SHARP_DATE
-    | TOKEN_SHARP_DATETIME
-    | TOKEN_SHARP_DATETIMEZONE
+    | TOKEN_HASH_SHARED
+    | TOKEN_HASH_TABLE
+    | TOKEN_HASH_TIME
+    | TOKEN_HASH_DURATION
+    | TOKEN_HASH_INFINITY
+    | TOKEN_HASH_NAN
+    | TOKEN_HASH_SECTION
+    | TOKEN_HASH_BINARY
+    | TOKEN_HASH_DATE
+    | TOKEN_HASH_DATETIME
+    | TOKEN_HASH_DATETIMEZONE
     | TOKEN_NULL
     | TOKEN_OR
     | TOKEN_OTHERWISE
@@ -179,17 +179,17 @@ type nonTerminalId =
 // This function maps tokens to integer indexes
 let tagOfToken (t:token) = 
   match t with
-  | SHARP_SHARED _ -> 0 
-  | SHARP_TABLE _ -> 1 
-  | SHARP_TIME _ -> 2 
-  | SHARP_DURATION _ -> 3 
-  | SHARP_INFINITY _ -> 4 
-  | SHARP_NAN _ -> 5 
-  | SHARP_SECTION _ -> 6 
-  | SHARP_BINARY _ -> 7 
-  | SHARP_DATE _ -> 8 
-  | SHARP_DATETIME _ -> 9 
-  | SHARP_DATETIMEZONE _ -> 10 
+  | HASH_SHARED _ -> 0 
+  | HASH_TABLE _ -> 1 
+  | HASH_TIME _ -> 2 
+  | HASH_DURATION _ -> 3 
+  | HASH_INFINITY _ -> 4 
+  | HASH_NAN _ -> 5 
+  | HASH_SECTION _ -> 6 
+  | HASH_BINARY _ -> 7 
+  | HASH_DATE _ -> 8 
+  | HASH_DATETIME _ -> 9 
+  | HASH_DATETIMEZONE _ -> 10 
   | NULL _ -> 11 
   | OR _ -> 12 
   | OTHERWISE _ -> 13 
@@ -236,17 +236,17 @@ let tagOfToken (t:token) =
 // This function maps integer indexes to symbolic token ids
 let tokenTagToTokenId (tokenIdx:int) = 
   match tokenIdx with
-  | 0 -> TOKEN_SHARP_SHARED 
-  | 1 -> TOKEN_SHARP_TABLE 
-  | 2 -> TOKEN_SHARP_TIME 
-  | 3 -> TOKEN_SHARP_DURATION 
-  | 4 -> TOKEN_SHARP_INFINITY 
-  | 5 -> TOKEN_SHARP_NAN 
-  | 6 -> TOKEN_SHARP_SECTION 
-  | 7 -> TOKEN_SHARP_BINARY 
-  | 8 -> TOKEN_SHARP_DATE 
-  | 9 -> TOKEN_SHARP_DATETIME 
-  | 10 -> TOKEN_SHARP_DATETIMEZONE 
+  | 0 -> TOKEN_HASH_SHARED 
+  | 1 -> TOKEN_HASH_TABLE 
+  | 2 -> TOKEN_HASH_TIME 
+  | 3 -> TOKEN_HASH_DURATION 
+  | 4 -> TOKEN_HASH_INFINITY 
+  | 5 -> TOKEN_HASH_NAN 
+  | 6 -> TOKEN_HASH_SECTION 
+  | 7 -> TOKEN_HASH_BINARY 
+  | 8 -> TOKEN_HASH_DATE 
+  | 9 -> TOKEN_HASH_DATETIME 
+  | 10 -> TOKEN_HASH_DATETIMEZONE 
   | 11 -> TOKEN_NULL 
   | 12 -> TOKEN_OR 
   | 13 -> TOKEN_OTHERWISE 
@@ -346,17 +346,17 @@ let _fsyacc_tagOfErrorTerminal = 53
 // This function gets the name of a token as a string
 let token_to_string (t:token) = 
   match t with 
-  | SHARP_SHARED _ -> "SHARP_SHARED" 
-  | SHARP_TABLE _ -> "SHARP_TABLE" 
-  | SHARP_TIME _ -> "SHARP_TIME" 
-  | SHARP_DURATION _ -> "SHARP_DURATION" 
-  | SHARP_INFINITY _ -> "SHARP_INFINITY" 
-  | SHARP_NAN _ -> "SHARP_NAN" 
-  | SHARP_SECTION _ -> "SHARP_SECTION" 
-  | SHARP_BINARY _ -> "SHARP_BINARY" 
-  | SHARP_DATE _ -> "SHARP_DATE" 
-  | SHARP_DATETIME _ -> "SHARP_DATETIME" 
-  | SHARP_DATETIMEZONE _ -> "SHARP_DATETIMEZONE" 
+  | HASH_SHARED _ -> "HASH_SHARED" 
+  | HASH_TABLE _ -> "HASH_TABLE" 
+  | HASH_TIME _ -> "HASH_TIME" 
+  | HASH_DURATION _ -> "HASH_DURATION" 
+  | HASH_INFINITY _ -> "HASH_INFINITY" 
+  | HASH_NAN _ -> "HASH_NAN" 
+  | HASH_SECTION _ -> "HASH_SECTION" 
+  | HASH_BINARY _ -> "HASH_BINARY" 
+  | HASH_DATE _ -> "HASH_DATE" 
+  | HASH_DATETIME _ -> "HASH_DATETIME" 
+  | HASH_DATETIMEZONE _ -> "HASH_DATETIMEZONE" 
   | NULL _ -> "NULL" 
   | OR _ -> "OR" 
   | OTHERWISE _ -> "OTHERWISE" 
@@ -403,17 +403,17 @@ let token_to_string (t:token) =
 // This function gets the data carried by a token as an object
 let _fsyacc_dataOfToken (t:token) = 
   match t with 
-  | SHARP_SHARED _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_TABLE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_TIME _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_DURATION _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_INFINITY _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_NAN _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_SECTION _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_BINARY _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_DATE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_DATETIME _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
-  | SHARP_DATETIMEZONE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_SHARED _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_TABLE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_TIME _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_DURATION _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_INFINITY _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_NAN _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_SECTION _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_BINARY _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_DATE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_DATETIME _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
+  | HASH_DATETIMEZONE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | NULL _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | OR _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
   | OTHERWISE _fsyacc_x -> Microsoft.FSharp.Core.Operators.box _fsyacc_x 
@@ -483,7 +483,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 74 "Parser.fsy"
-                                             boilerplate + _1 
+                                            boilerplate + _1 
                    )
 # 74 "Parser.fsy"
                  : string));
