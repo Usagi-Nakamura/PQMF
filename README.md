@@ -21,10 +21,20 @@ Now only 6% of m language's grammatical rules have been taken care of.
 
 > Usage
 
-1. Write code something like below in the file named "test.pqmf".  
-![](\image\2022-11-20_17h51.png)
+1. Write code something like below in the file named "test.pqmf". 
 
-1. "dotnet run" at the path PQMF on the command line, If it returns to prompt with no error message,
-   test.pq has been created successfully.
+   ![](images\2022-11-20_17h51_51.png)
 
-1. Open Blank.xlsx and **refresh all** ,then that book reads test.pq and you can see the result on the sheet. 
+1. "dotnet run" at the path PQMF on the command line, Returning to prompt with no error message,
+   test.pq has been created successfully.  
+
+   ![](images\2022-11-20_17h53_37.png)
+
+1. Open Blank.xlsx and **Refresh All** .  
+
+   ![](images\2022-11-20_22h20_01.png)
+
+
+1. Then that Excel book reads test.pq and you can see result of the query on the sheet.  
+
+   ![](images\2022-11-20_22h26_12.png)
