@@ -4,73 +4,10 @@ module Lexer
     
 open System
 open FSharp.Text.Lexing
+open Internal.Utilities.Map
 open Parser
 
 let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
-
-let operators =
-
-    [
-
-        "+", ADDITIVE_OPERATOR;
-        "-", ADDITIVE_OPERATOR;
-        "*", MULTIPLICATIVE_OPERATOR;
-        "/", MULTIPLICATIVE_OPERATOR;
-        " ", WHITESPACE;
-        "\t", WHITESPACE;
-        "\n", WHITESPACE;
-        "\r", WHITESPACE;
-        "|>", FORWARD_PIPELINE_OPERATOR;
-        "(", OPENING_PARENTHESIS;
-        ")", CLOSING_PARENTHESIS;
-        ",", COMMA;
-        "{", OPENING_BRACE;
-        "}", CLOSING_BRACE;
-        "..", DOTDOT;
-        "=>", FUNCTION_OPERATOR;
-        "=", EQ;
-
-    ] |> Map.ofList
-
-let keywords =
-
-    [
-                 
-        "and", AND;
-        "each", EACH;
-        "else", ELSE;
-        "error", ERROR;
-        "as", AS;
-        "false", FALSE;
-        "if", IF;
-        "in", IN;
-        "is", IS;
-        "let", LET;
-        "meta", META;
-        "not", NOT;
-        "null", NULL;
-        "or", OR;
-        "otherwise", OTHERWISE;
-        "section", SECTION;
-        "shared", SHARED;
-        "then", THEN;
-        "true", TRUE;
-        "try", TRY;
-        "type", TYPE;
-        "#binary", HASH_BINARY;
-        "#date", HASH_DATE;
-        "#datetime", HASH_DATETIME;
-        "#datetimezone", HASH_DATETIMEZONE;
-        "#duration", HASH_DURATION;
-        "#infinity", HASH_INFINITY;
-        "#nan", HASH_NAN;
-        "#sections", HASH_SECTION;
-        "#shared", HASH_SHARED;
-        "#table", HASH_TABLE;
-        "#time", HASH_TIME;
-
-    ] |> Map.ofList
-
 
 let removePrime (s: string) = s.Substring(0, s.Length - 1) 
 
@@ -78,7 +15,7 @@ let trimWhiteAndNewLine (s: string) = s.Trim([| ' '; '\t'; '\n'; '\r' |])
 let trimWhite (s: string) = s.Trim([| ' '; '\t' |])
 
 
-# 81 "Lexer.fs"
+# 18 "Lexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -187,67 +124,67 @@ let rec _fslex_dummy () = _fslex_dummy()
 and tokenize  lexbuf =
   match _fslex_tables.Interpret(0,lexbuf) with
   | 0 -> ( 
-# 149 "Lexer.fsl"
+# 95 "Lexer.fsl"
                            LITERAL (lexeme lexbuf) 
-# 192 "Lexer.fs"
+# 129 "Lexer.fs"
           )
   | 1 -> ( 
-# 152 "Lexer.fsl"
+# 98 "Lexer.fsl"
                    CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR ") =>" 
-# 197 "Lexer.fs"
+# 134 "Lexer.fs"
           )
   | 2 -> ( 
-# 154 "Lexer.fsl"
+# 100 "Lexer.fsl"
                              
                    let tok = lexeme lexbuf
                    let s = ( tok |> trimWhiteAndNewLine)
                    let s' = ( tok |> trimWhite)
                    operators[s](tok) 
                  
-# 207 "Lexer.fs"
+# 144 "Lexer.fs"
           )
   | 3 -> ( 
-# 161 "Lexer.fsl"
+# 107 "Lexer.fsl"
                           
                    let tok = lexeme lexbuf
                    let s = ( tok |> trimWhiteAndNewLine)
                    let s' = ( tok |> trimWhite)
                    keywords[s](tok) 
                  
-# 217 "Lexer.fs"
+# 154 "Lexer.fs"
           )
   | 4 -> ( 
-# 168 "Lexer.fsl"
+# 114 "Lexer.fsl"
                                          
                    let s = lexeme lexbuf
                    IDENTIFIER_WITH_PRIME ( s |> removePrime ) 
                  
-# 225 "Lexer.fs"
+# 162 "Lexer.fs"
           )
   | 5 -> ( 
-# 173 "Lexer.fsl"
+# 119 "Lexer.fsl"
                               
                    let s = lexeme lexbuf
                    match (keywords |> Map.containsKey (s)) with
                    | true -> keywords[s](s)
                    | false -> IDENTIFIER (lexeme lexbuf) 
                  
-# 235 "Lexer.fs"
+# 172 "Lexer.fs"
           )
   | 6 -> ( 
-# 180 "Lexer.fsl"
+# 126 "Lexer.fsl"
                                  WHITESPACE ((lexeme lexbuf) |> trimWhite) 
-# 240 "Lexer.fs"
+# 177 "Lexer.fs"
           )
   | 7 -> ( 
-# 182 "Lexer.fsl"
+# 128 "Lexer.fsl"
                                      EOF 
-# 245 "Lexer.fs"
+# 182 "Lexer.fs"
           )
   | 8 -> ( 
-# 184 "Lexer.fsl"
+# 130 "Lexer.fsl"
                      lexeme lexbuf |> sprintf "Parsing error: %s" |> failwith 
-# 250 "Lexer.fs"
+# 187 "Lexer.fs"
           )
   | _ -> failwith "tokenize"
 
