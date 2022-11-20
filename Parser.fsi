@@ -46,13 +46,10 @@ type token =
   | ADDITIVE_OPERATOR of (string)
   | MULTIPLICATIVE_OPERATOR of (string)
   | EOF
-  | LPAREN
-  | RPAREN
   | IDENTIFIER_WITH_PRIME of (string)
   | IDENTIFIER of (string)
   | APPLICATION of (string)
   | WHITESPACE of (string)
-  | OP of (string)
   | LITERAL of (string)
 type tokenId = 
     | TOKEN_HASH_SHARED
@@ -100,13 +97,10 @@ type tokenId =
     | TOKEN_ADDITIVE_OPERATOR
     | TOKEN_MULTIPLICATIVE_OPERATOR
     | TOKEN_EOF
-    | TOKEN_LPAREN
-    | TOKEN_RPAREN
     | TOKEN_IDENTIFIER_WITH_PRIME
     | TOKEN_IDENTIFIER
     | TOKEN_APPLICATION
     | TOKEN_WHITESPACE
-    | TOKEN_OP
     | TOKEN_LITERAL
     | TOKEN_end_of_input
     | TOKEN_error

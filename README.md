@@ -17,12 +17,14 @@ Being "a little bit more functional" above includes the followings, all of which
 
 > Status
 
-Now it is just in experimental stage.
+Now only 6% of m language's grammatical rules have been taken care of.
 
 > Usage
 
-1. Write code in the file named "test.pqmf".
+1. Write code something like below in the file named "test.pqmf".  
+![](\image\2022-11-20_17h51.png)
 
-1. "dotnet run" at the path PQMF on the command line
+1. "dotnet run" at the path PQMF on the command line, If it returns to prompt with no error message,
+   test.pq has been created successfully.
 
-
+1. Open Blank.xlsx and **refresh all** ,then that book reads test.pq and you can see the result on the sheet. 
