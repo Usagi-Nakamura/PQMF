@@ -24,6 +24,12 @@ let operators =
         "..", DOTDOT;
         "=>", FUNCTION_OPERATOR;
         "=", EQ;
+        "<>", NE;
+        ">", RELATIONAL_OPERATOR;
+        "<", RELATIONAL_OPERATOR;
+        ">=", RELATIONAL_OPERATOR;
+        "<=", RELATIONAL_OPERATOR;
+
 
     ] |> Map.ofList
 
@@ -44,6 +50,8 @@ let keywords =
         "meta", META;
         "not", NOT;
         "null", NULL;
+        "nullable", NULLABLE;
+        "optional", OPTIONAL;
         "or", OR;
         "otherwise", OTHERWISE;
         "section", SECTION;
@@ -65,3 +73,6 @@ let keywords =
         "#time", HASH_TIME;
 
     ] |> Map.ofList
+
+
+

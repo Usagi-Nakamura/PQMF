@@ -17,7 +17,8 @@ Being "a little bit more functional" above includes the followings, all of which
 
 > Status
 
-Now only 6% of m language's grammatical rules have been taken care of.
+Now only 10% of m language's grammatical rules have been taken care of.  
+See progress.xlsx
 
 > Usage
 
