@@ -43,6 +43,8 @@ type token =
   | CLOSING_PARENTHESIS of (string)
   | OPENING_BRACE of (string)
   | CLOSING_BRACE of (string)
+  | OPENING_SQUARE_BRACKET of (string)
+  | CLOSING_SQUARE_BRACKET of (string)
   | COMMA of (string)
   | FORWARD_PIPELINE_OPERATOR of (string)
   | EQ of (string)
@@ -99,6 +101,8 @@ type tokenId =
     | TOKEN_CLOSING_PARENTHESIS
     | TOKEN_OPENING_BRACE
     | TOKEN_CLOSING_BRACE
+    | TOKEN_OPENING_SQUARE_BRACKET
+    | TOKEN_CLOSING_SQUARE_BRACKET
     | TOKEN_COMMA
     | TOKEN_FORWARD_PIPELINE_OPERATOR
     | TOKEN_EQ
@@ -128,6 +132,11 @@ type nonTerminalId =
     | NONTERM_item_list
     | NONTERM_item_list_opt
     | NONTERM_item
+    | NONTERM_record_expression
+    | NONTERM_field_list_opt
+    | NONTERM_field_list
+    | NONTERM_field
+    | NONTERM_field_name
     | NONTERM_function_expression
     | NONTERM_function_body
     | NONTERM_parameter_list

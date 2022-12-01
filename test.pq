@@ -25,8 +25,8 @@ in
 let 
     a = 2,
     b = Usagi_Nakamura.Curry(List.Transform)((x as number, y) as number => x * 2 + y)({a..(2 * 5) }),
-    c = 9,
+    c = [ EmpCode = 12, Age = 16 ],
     d = -2,
-    e = 10
+    e = []
 in 
     b
