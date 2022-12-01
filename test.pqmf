@@ -2,7 +2,7 @@ let
     a = 2,
     b = { a..(2 * 5) } |> List.Transform' (x as number, y) as number => x * 2 + y,
     c = 9,
-    d = ( a > 2 and b > 3 ),
+    d = -2,
     e = 10
 in 
     b
