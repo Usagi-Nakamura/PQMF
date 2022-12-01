@@ -21,6 +21,8 @@ let operators =
         ",", COMMA;
         "{", OPENING_BRACE;
         "}", CLOSING_BRACE;
+        "[", OPENING_SQUARE_BRACKET;
+        "]", CLOSING_SQUARE_BRACKET;
         "..", DOTDOT;
         "=>", FUNCTION_OPERATOR;
         "=", EQ;
