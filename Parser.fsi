@@ -118,6 +118,10 @@ type nonTerminalId =
     | NONTERM__startparse
     | NONTERM_parse
     | NONTERM_expression
+    | NONTERM_logical_or_expression
+    | NONTERM_logical_and_expression
+    | NONTERM_is_expression
+    | NONTERM_as_expression
     | NONTERM_equality_expression
     | NONTERM_relational_expression
     | NONTERM_additive_expression
