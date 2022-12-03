@@ -9,6 +9,7 @@ let operators =
 
         "+", ADDITIVE_OPERATOR;
         "-", ADDITIVE_OPERATOR;
+        "&", ADDITIVE_OPERATOR;
         "*", MULTIPLICATIVE_OPERATOR;
         "/", MULTIPLICATIVE_OPERATOR;
         " ", WHITESPACE;
