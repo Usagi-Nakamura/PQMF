@@ -36,6 +36,7 @@ type token =
   | LET of (string)
   | META of (string)
   | NOT of (string)
+  | QUESTION_MARK of (string)
   | CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR of (string)
   | FUNCTION_OPERATOR of (string)
   | DOTDOT of (string)
@@ -94,6 +95,7 @@ type tokenId =
     | TOKEN_LET
     | TOKEN_META
     | TOKEN_NOT
+    | TOKEN_QUESTION_MARK
     | TOKEN_CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR
     | TOKEN_FUNCTION_OPERATOR
     | TOKEN_DOTDOT
@@ -128,6 +130,10 @@ type nonTerminalId =
     | NONTERM_invoke_expression
     | NONTERM_forward_pipeline_expression
     | NONTERM_parenthesized_expression
+    | NONTERM_item_access_expression
+    | NONTERM_item_selection
+    | NONTERM_optional_item_selection
+    | NONTERM_item_selector
     | NONTERM_list_expression
     | NONTERM_item_list
     | NONTERM_item_list_opt

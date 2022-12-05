@@ -32,7 +32,7 @@ let operators =
         "<", RELATIONAL_OPERATOR;
         ">=", RELATIONAL_OPERATOR;
         "<=", RELATIONAL_OPERATOR;
-
+        "?", QUESTION_MARK
 
     ] |> Map.ofList
 
