@@ -36,6 +36,13 @@ let operators =
 
     ] |> Map.ofList
 
+let punctuators = 
+
+    [
+        ".",DOT
+    ] |> Map.ofList
+
+
 let keywords =
 
     [

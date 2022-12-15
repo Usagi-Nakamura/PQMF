@@ -39,6 +39,7 @@ type token =
   | QUESTION_MARK of (string)
   | CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR of (string)
   | FUNCTION_OPERATOR of (string)
+  | DOT of (string)
   | DOTDOT of (string)
   | OPENING_PARENTHESIS of (string)
   | CLOSING_PARENTHESIS of (string)
@@ -98,6 +99,7 @@ type tokenId =
     | TOKEN_QUESTION_MARK
     | TOKEN_CLOSING_PARANTHESIS_FOLLOWED_BY_FUNCTION_OPERATOR
     | TOKEN_FUNCTION_OPERATOR
+    | TOKEN_DOT
     | TOKEN_DOTDOT
     | TOKEN_OPENING_PARENTHESIS
     | TOKEN_CLOSING_PARENTHESIS
@@ -127,7 +129,12 @@ type nonTerminalId =
     | NONTERM_unary_expression
     | NONTERM_literal_expression
     | NONTERM_identifier_expression
+    | NONTERM_generalized_identifier_part
+    | NONTERM_generalized_identifier_segment
+    | NONTERM_keyword_or_identifier
+    | NONTERM_keyword_not_starting_hash
     | NONTERM_invoke_expression
+    | NONTERM_invoke_parameter_list
     | NONTERM_forward_pipeline_expression
     | NONTERM_parenthesized_expression
     | NONTERM_item_access_expression

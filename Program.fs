@@ -13,9 +13,10 @@ let tokenList (input : string) =
   let lexbuf = LexBuffer<char>.FromString input
   seq {
     while not lexbuf.IsPastEndOfStream do
-      match tokenize lexbuf with
+      let tkn = tokenize lexbuf
+      match tkn with
       | EOF -> yield! []
-      | _ -> yield ((lexeme lexbuf), lexbuf.EndPos.Line, lexbuf.EndPos.Column, lexbuf.EndPos.AbsoluteOffset)
+      | _ -> yield (tkn)
   }
 
 [<EntryPoint>]
@@ -28,7 +29,7 @@ let main argv =
     let input = reader.ReadToEnd()
     reader.Close()
 
-//    printfn "%A" ((tokenList input) |> List.ofSeq)
+    printfn "%A" ((tokenList input) |> List.ofSeq)
 
 //(*
     let result = evaluate input
