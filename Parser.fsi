@@ -126,6 +126,7 @@ type nonTerminalId =
     | NONTERM__startparse
     | NONTERM_parse
     | NONTERM_expression
+    | NONTERM_expression_a
     | NONTERM_unary_expression
     | NONTERM_literal_expression
     | NONTERM_identifier_expression
@@ -167,7 +168,6 @@ type nonTerminalId =
     | NONTERM_let_expression
     | NONTERM_variable_list
     | NONTERM_variable
-    | NONTERM_variable_name
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
 

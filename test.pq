@@ -23,6 +23,7 @@ in
 
 
 let 
-    a = 1 
-in 
-    a
+    a = 2,
+    b = Usagi_Nakamura.Curry(List.Transform)(x)({ a..(2*5) })
+in
+    b
