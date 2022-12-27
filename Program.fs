@@ -31,7 +31,7 @@ let main argv =
 
     let input = " " + source_text
     
-//    printfn "%A" ((tokenList input) |> List.ofSeq)
+    printfn "%A" ((tokenList input) |> List.ofSeq)
 
     let result = evaluate input
 

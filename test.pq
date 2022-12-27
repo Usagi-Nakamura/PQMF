@@ -22,8 +22,11 @@ in
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-let 
+ let 
     a = 2,
-    b = Usagi_Nakamura.Curry(List.Transform)(x)({ a..(2*5) })
-in
-    b
+    b = Usagi_Nakamura.Curry(List.Transform)((x as number, y) as number => x * 2 + y)({ a..(2 * 5) }),
+    c = [ EmpCode = 12, Name = "Nakamura" & " is Usagi", dobule_quote = """", Age = 16, IsMale = true ],
+    d = -2,
+    e = []
+in 
+    e
