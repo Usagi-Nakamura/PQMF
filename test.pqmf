@@ -1,8 +1,4 @@
 let 
-    a = 2,
-    b = { a..(2 * 5) } |> List.Transform' (x as number, y) as number => x * 2 + y,
-    c = [ EmpCode = 12, Name = "Nakamura" & " is Usagi", dobule_quote = """", Age = 16, IsMale = true ],
-    d = -2,
-    e = []
-in 
-    e
+    a = if  b = 3 then 2 else 3
+in  
+    a
