@@ -29,7 +29,7 @@ let main argv =
     let source_text = reader.ReadToEnd()
     reader.Close()
 
-    let input = " " + source_text
+    let input = source_text
     
     printfn "%A" ((tokenList input) |> List.ofSeq)
 

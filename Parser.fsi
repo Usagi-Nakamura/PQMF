@@ -143,6 +143,17 @@ type nonTerminalId =
     | NONTERM_item_selection
     | NONTERM_optional_item_selection
     | NONTERM_item_selector
+    | NONTERM_field_access_expression
+    | NONTERM_field_selection
+    | NONTERM_implicit_target_field_selection
+    | NONTERM_field_selector
+    | NONTERM_required_field_selector
+    | NONTERM_optional_field_selector
+    | NONTERM_projection
+    | NONTERM_required_projection
+    | NONTERM_optional_projection
+    | NONTERM_required_selector_list
+    | NONTERM_implicit_target_projection
     | NONTERM_list_expression
     | NONTERM_item_list
     | NONTERM_item_list_opt
