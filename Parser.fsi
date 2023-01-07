@@ -177,6 +177,8 @@ type nonTerminalId =
     | NONTERM_nullable_primitive_type
     | NONTERM_nullable_opt
     | NONTERM_primitive_type
+    | NONTERM_each_expression
+    | NONTERM_each_expression_body
     | NONTERM_let_expression
     | NONTERM_variable_list
     | NONTERM_variable
